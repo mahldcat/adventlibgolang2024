@@ -13,6 +13,9 @@ const (
 	day2Path = "2024/day/2/input"
 	day3Path = "2024/day/3/input"
 	day4Path = "2024/day/4/input"
+	day5Path = "2024/day/5/input"
+	day6Path = "2024/day/6/input"
+	day7Path = "2024/day/7/input"
 )
 
 type DataFetcher struct {
@@ -76,4 +79,8 @@ func (fetcher *DataFetcher) FetchDay1Data() ([]int, []int, error) {
 	left, right := day1DataParser(rawData)
 
 	return left, right, nil
+}
+
+func (fetcher *DataFetcher) FetchDay4Data() (string, error) {
+	return fetcher.fetchData(day1Path)
 }
