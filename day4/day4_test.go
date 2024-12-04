@@ -8,16 +8,19 @@ func getExampleData() []struct {
 	name             string
 	rawData          string
 	expectedRuneGrid [][]rune
+	expectedPart1Sln int
+	expectedPart2Sln int
 } {
 	return []struct {
 		name             string
 		rawData          string
 		expectedRuneGrid [][]rune
+		expectedPart1Sln int
+		expectedPart2Sln int
 	}{
 		{
 			name: "ExampleTestCase",
-			rawData: `
-MMMSXXMASM
+			rawData: `MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
 MSAMASMSMX
@@ -39,7 +42,32 @@ MXMXAXMASX`,
 				{'M', 'A', 'M', 'M', 'M', 'X', 'M', 'M', 'M', 'M'},
 				{'M', 'X', 'M', 'X', 'A', 'X', 'M', 'A', 'S', 'X'},
 			},
+			expectedPart1Sln: 18,
+			expectedPart2Sln: 9,
 		},
+	}
+}
+
+func TestSolveDay4Part1(t *testing.T) {
+	for _, tc := range getExampleData() {
+		t.Run(tc.name, func(t *testing.T) {
+			result := SolveDay4Part1(tc.rawData)
+			if result != tc.expectedPart1Sln {
+				t.Errorf("Error Expected %d Calculated %d", tc.expectedPart1Sln, result)
+			}
+		})
+	}
+
+}
+func TestSolveDay4Part2(t *testing.T) {
+	for _, tc := range getExampleData() {
+		t.Run(tc.name, func(t *testing.T) {
+			result := SolveDay4Part2(tc.rawData)
+			if result != tc.expectedPart2Sln {
+				t.Errorf("Error Expected %d Calculated %d", tc.expectedPart2Sln, result)
+			}
+
+		})
 	}
 }
 
