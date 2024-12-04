@@ -31,6 +31,7 @@ func SolveDay4Part1(rawData string) int {
 	wordRune := []rune("XMAS")
 	wl := day4DataParser(rawData)
 
+	//for walking around the 3x3 grid once we find an 'X'
 	grid := []int{-1, 0, 1}
 
 	//holy nesting batman!
@@ -57,8 +58,64 @@ func SolveDay4Part1(rawData string) int {
 	return wordCt
 }
 
+func findMAS(wl [][]rune, xA int, yA int, maxX int, maxY int) bool {
+
+	//the location of 'A' is on the border of the rune grid
+	if xA == 0 || xA+1 == maxX || yA == 0 || yA+1 == maxY {
+		return false
+	}
+
+	//we found 'A' (which is the new point to search for)
+	//look for M and S in the corners of the 3x3 grid
+	// M has to show up twice and has to be on one "edge" of the 3x3 to be valid
+
+	if wl[yA-1][xA-1] == 'M' &&
+		wl[yA-1][xA+1] == 'M' &&
+		wl[yA+1][xA-1] == 'S' &&
+		wl[yA+1][xA+1] == 'S' {
+		return true
+	}
+
+	if wl[yA-1][xA+1] == 'M' &&
+		wl[yA+1][xA+1] == 'M' &&
+		wl[yA-1][xA-1] == 'S' &&
+		wl[yA+1][xA-1] == 'S' {
+		return true
+	}
+
+	if wl[yA+1][xA-1] == 'M' &&
+		wl[yA+1][xA+1] == 'M' &&
+		wl[yA-1][xA-1] == 'S' &&
+		wl[yA-1][xA+1] == 'S' {
+		return true
+	}
+
+	if wl[yA-1][xA-1] == 'M' &&
+		wl[yA+1][xA-1] == 'M' &&
+		wl[yA-1][xA+1] == 'S' &&
+		wl[yA+1][xA+1] == 'S' {
+		return true
+	}
+
+	return false
+}
+
+//X pattern for MAS
 func SolveDay4Part2(rawData string) int {
 	wordCt := 0
+
+	wl := day4DataParser(rawData)
+
+	for y, row := range wl {
+		for x, glyph := range row {
+			if glyph == 'A' {
+				if findMAS(wl, x, y, len(row), len(wl)) {
+
+					wordCt++
+				}
+			}
+		}
+	}
 
 	return wordCt
 }
