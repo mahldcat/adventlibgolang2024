@@ -71,5 +71,8 @@ func (fetcher *DataFetcher) FetchDay1Data() ([]int, []int, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to fetch data from AOC: %w", err)
 	}
-	return day1DataParser(rawData)
+
+	left, right := day1DataParser(rawData)
+
+	return left, right, nil
 }
