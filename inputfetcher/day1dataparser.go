@@ -1,12 +1,12 @@
 package inputfetcher
 
 import (
-	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
 
-func day1DataParser(rawData string) ([]int, []int, err) {
+func day1DataParser(rawData string) ([]int, []int) {
 	var left []int
 	var right []int
 
@@ -16,19 +16,19 @@ func day1DataParser(rawData string) ([]int, []int, err) {
 		// Split each line into parts
 		parts := strings.Fields(line)
 		if len(parts) != 2 {
-			fmt.Printf("Skipping malformed line: %s\n", line)
+			log.Printf("Skipping malformed line: %s\n", line)
 			continue
 		}
 
 		// Parse the numbers
 		leftNum, err := strconv.Atoi(parts[0])
 		if err != nil {
-			fmt.Printf("Error parsing number: %v\n", err)
+			log.Printf("Error parsing number: %v\n", err)
 			continue
 		}
 		rightNum, err := strconv.Atoi(parts[1])
 		if err != nil {
-			fmt.Printf("Error parsing number: %v\n", err)
+			log.Printf("Error parsing number: %v\n", err)
 			continue
 		}
 
@@ -37,5 +37,5 @@ func day1DataParser(rawData string) ([]int, []int, err) {
 		right = append(right, rightNum)
 	}
 
-	return left, right, nil
+	return left, right
 }
