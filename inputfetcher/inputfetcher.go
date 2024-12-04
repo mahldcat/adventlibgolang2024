@@ -3,6 +3,7 @@ package inputfetcher
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -25,7 +26,7 @@ func NewDataFetcher(bearerToken string) DataFetcher {
 }
 
 func (fetcher *DataFetcher) fetchData(path string) (string, error) {
-	fmt.Printf("Entering FetchData, Path:%s\n", path)
+	log.Printf("Entering FetchData, Path:%s\n", path)
 
 	// Construct the full URL
 	url := baseUri + path
