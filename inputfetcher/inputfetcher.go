@@ -1,7 +1,6 @@
 package inputfetcher
 
 import (
-	//	errors,
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -66,6 +65,11 @@ func (fetcher *DataFetcher) fetchData(path string) (string, error) {
 
 }
 
-func (fetcher *DataFetcher) FetchDay1Data() (string, error) {
-	return fetcher.fetchData(day1Path)
+func (fetcher *DataFetcher) FetchDay1Data() ([]int, []int, error) {
+
+	rawData, err := fetcher.fetchData(day1Path)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to fetch data from AOC: %w", err)
+	}
+	return day1DataParser(rawData)
 }
