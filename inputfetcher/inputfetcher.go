@@ -82,5 +82,17 @@ func (fetcher *DataFetcher) FetchDay1Data() ([]int, []int, error) {
 }
 
 func (fetcher *DataFetcher) FetchDay4Data() (string, error) {
-	return fetcher.fetchData(day1Path)
+	return fetcher.fetchData(day4Path)
+}
+
+func (fetcher *DataFetcher) FetchDay5Data() (string, error) {
+	return fetcher.fetchData(day5Path)
+}
+
+func (fetcher *DataFetcher) FetchDay6Data() (string, error) {
+	return fetcher.fetchData(day6Path)
+}
+
+func (fetcher *DataFetcher) FetchDay7Data() (string, error) {
+	return fetcher.fetchData(day7Path)
 }
