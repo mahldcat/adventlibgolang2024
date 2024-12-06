@@ -5,12 +5,6 @@ import (
 	"strings"
 )
 
-type Vector struct {
-	X      int
-	Y      int
-	Facing rune
-}
-
 func day6DataParser(rawData string) ([][]rune, Vector, error) {
 	reader := strings.NewReader(rawData)
 	scanner := bufio.NewScanner(reader)
@@ -23,15 +17,14 @@ func day6DataParser(rawData string) ([][]rune, Vector, error) {
 		if line == "" { // Skip empty lines (optional, based on your needs)
 			continue
 		}
-		guardIdx := strings.IndexRune(line, '^')
 
-		if guardIdx == -1 {
-			grid = append(grid, []rune(line))
-		} else {
+		guardIdx := strings.IndexRune(line, '^')
+		if guardIdx != -1 {
 			guard.X = guardIdx
 			guard.Y = y
-			grid = append(grid, []rune(strings.Replace(line, "^", ".", -1)))
 		}
+
+		grid = append(grid, []rune(line))
 
 	}
 
