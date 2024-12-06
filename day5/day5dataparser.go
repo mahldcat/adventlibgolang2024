@@ -2,12 +2,14 @@ package day5
 
 import (
 	"bufio"
+	"errors"
 	"strconv"
 	"strings"
 )
 
 func day5DataParser(rawData string) (map[int][]int, [][]int, error) {
 
+	errors.New("not implemented")
 	reader := strings.NewReader(rawData)
 	scanner := bufio.NewScanner(reader)
 
