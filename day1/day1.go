@@ -23,7 +23,9 @@ func toFreq(slice []int) map[int]int {
 	return freqMap
 }
 
-func SolveDay1Part1(left []int, right []int) (int, error) {
+func SolveDay1Part1(rawData string) (int, error) {
+	left, right := day1DataParser(rawData)
+
 	if len(left) != len(right) {
 		return -1, errors.New("left and right slices must be the same length")
 	}
