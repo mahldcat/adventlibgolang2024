@@ -1,6 +1,6 @@
 
 
-foreach($day in 8..24){
+foreach($day in 6..24){
     $path = "./day$($day)"
 
     $header = "package day$($day)"
