@@ -6,6 +6,40 @@ type Vector struct {
 	Facing rune
 }
 
+func (v *Vector) Reset(x int, y int) {
+	v.X = x
+	v.Y = y
+	v.Facing = 'N'
+}
+
+func (v *Vector) UpdateFacing() {
+	switch v.Facing {
+	case 'N':
+		v.Facing = 'E'
+	case 'E':
+		v.Facing = 'S'
+	case 'S':
+		v.Facing = 'W'
+	case 'W':
+		v.Facing = 'N'
+	}
+}
+
+func (v *Vector) Move() {
+	switch v.Facing {
+	case 'N':
+		v.Y--
+	case 'E':
+		v.X++
+	case 'S':
+		v.Y++
+	case 'W':
+		v.X--
+	}
+}
+
+/**********************************************************/
+
 type VectorPath struct {
 	path []Vector
 }
