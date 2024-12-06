@@ -77,44 +77,76 @@ func UpdateGuardStep(grid [][]rune, guard *Vector) (bool, bool) {
 	return guard.X < 0 || guard.Y < 0 || guard.X == len(grid[0]) || guard.Y == len(grid), facingChange
 }
 
-func alreadyVisited(visitMap map[int]map[int]bool, guard *Vector) bool {
-
-	x := guard.X
-	y := guard.Y
-	innermap, existsy := visitMap[y]
-
-	if !existsy {
-		innermap = make(map[int]bool)
-		visitMap[y] = innermap
-	}
-
-	_, existsx := innermap[x]
-
-	if !existsx {
-		innermap[x] = true
-	}
-
-	return existsx
-}
-
 func SolveDay6Part1(rawData string) int {
 	solnResult := 0
 
 	grid, guard, _ := day6DataParser(rawData)
 
-	visitedSpaces := make(map[int]map[int]bool)
+	vPath := New()
 
 	for escape, facingChange := false, false; !escape; escape, facingChange = UpdateGuardStep(grid, &guard) {
-		if !facingChange && !alreadyVisited(visitedSpaces, &guard) {
-			solnResult++
+		if !facingChange {
+
+			if !vPath.LocationTraversed(guard) {
+				solnResult++
+				vPath.Append(guard)
+
+			}
 		}
 	}
-
 	return solnResult
 }
 
-func SolveDay6Part2(rawData string) int {
-	solnResult := -1
+func ResetGuard(guard *Vector, X int, Y int) {
+	guard.X = X
+	guard.Y = Y
+	guard.Facing = 'N'
+}
 
-	return solnResult
+func SolveDay6Part2(rawData string) int {
+
+	grid, guard, _ := day6DataParser(rawData)
+
+	startX := guard.X
+	startY := guard.Y
+
+	vPath := New()
+
+	//we know from soln one that vPath will be vectors that won't cycle
+	//so we need to collect each step of the guard
+	for escape, facingChange := false, false; !escape; escape, facingChange = UpdateGuardStep(grid, &guard) {
+		if !facingChange {
+
+			vPath.Append(guard)
+		}
+	}
+
+	guardSteps := vPath.GetConsumedCoordinates()
+
+	cycleCoords := New()
+
+	for _, step := range guardSteps {
+		ResetGuard(&guard, startX, startY)
+		cycleDetected := false
+		var testPath = New()
+
+		grid[step.Y][step.X] = '#' //place a block
+		for escape := false; !escape; escape, _ = UpdateGuardStep(grid, &guard) {
+
+			if testPath.VectorCausesCycle(guard) {
+				cycleDetected = true
+				break
+			}
+			testPath.Append(guard)
+		}
+
+		if cycleDetected && !cycleCoords.LocationTraversed(step) {
+			cycleCoords.Append(step)
+		}
+
+		grid[step.Y][step.X] = '.' //reset back to blank
+
+	}
+
+	return cycleCoords.Length()
 }
