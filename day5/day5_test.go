@@ -79,3 +79,20 @@ func TestDay5Part2(t *testing.T) {
 		t.Errorf("mismatched solution value expected %d, actual %d", expected, sln)
 	}
 }
+
+func TestUpdateOrderRepair(t *testing.T) {
+
+	rules, updates, _ := day5DataParser(exampleRaw)
+	//                     75, 97, 47, 61, 53
+	expectedOrder := []int{97, 75, 47, 61, 53}
+
+	repairUpdateOrder(rules, updates[3])
+
+	for i, page := range updates[3] {
+		expected := expectedOrder[i]
+
+		if page != expected {
+			t.Errorf("Mismatched order[%d] expected %d, actual: %d", i, expected, page)
+		}
+	}
+}
