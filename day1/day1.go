@@ -40,8 +40,9 @@ func SolveDay1Part1(rawData string) (int, error) {
 	return fullDist, nil
 }
 
-func SolveDay1Part2(left []int, right []int) (int, error) {
+func SolveDay1Part2(rawData string) (int, error) {
 
+	left, right := day1DataParser(rawData)
 	fMap := toFreq(right)
 
 	distFreqCalc := 0
