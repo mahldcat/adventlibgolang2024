@@ -8,18 +8,16 @@ import (
 )
 
 const (
-	baseUri  = "https://adventofcode.com/"
-	day1Path = "2024/day/1/input"
-	day2Path = "2024/day/2/input"
-	day3Path = "2024/day/3/input"
-	day4Path = "2024/day/4/input"
-	day5Path = "2024/day/5/input"
-	day6Path = "2024/day/6/input"
-	day7Path = "2024/day/7/input"
+	baseUri       = "https://adventofcode.com/"
+	dayFormatPath = "2024/day/%d/input"
 )
 
 type DataFetcher struct {
 	bearerToken string
+}
+
+func getInputDataPath(day int) string {
+	return fmt.Sprintf(dayFormatPath, day)
 }
 
 func NewDataFetcher(bearerToken string) DataFetcher {
@@ -69,30 +67,6 @@ func (fetcher *DataFetcher) fetchData(path string) (string, error) {
 
 }
 
-func (fetcher *DataFetcher) FetchDay1Data() ([]int, []int, error) {
-
-	rawData, err := fetcher.fetchData(day1Path)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to fetch data from AOC: %w", err)
-	}
-
-	left, right := day1DataParser(rawData)
-
-	return left, right, nil
-}
-
-func (fetcher *DataFetcher) FetchDay4Data() (string, error) {
-	return fetcher.fetchData(day4Path)
-}
-
-func (fetcher *DataFetcher) FetchDay5Data() (string, error) {
-	return fetcher.fetchData(day5Path)
-}
-
-func (fetcher *DataFetcher) FetchDay6Data() (string, error) {
-	return fetcher.fetchData(day6Path)
-}
-
-func (fetcher *DataFetcher) FetchDay7Data() (string, error) {
-	return fetcher.fetchData(day7Path)
+func (fetcher *DataFetcher) GetDataByDay(day int) (string, error) {
+	return fetcher.fetchData(getInputDataPath(day))
 }

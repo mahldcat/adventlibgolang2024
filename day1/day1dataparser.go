@@ -1,4 +1,4 @@
-package inputfetcher
+package day1
 
 import (
 	"log"
