@@ -11,7 +11,7 @@ func TestParser(t *testing.T) {
 }
 
 func TestDay10Part1(t *testing.T) {
-	expected := 42
+	expected := -1
 	sln := SolveDay10Part1(exampleRaw)
 
 	if sln != expected {
@@ -21,7 +21,7 @@ func TestDay10Part1(t *testing.T) {
 }
 
 func TestDay10Part2(t *testing.T) {
-	expected := 42
+	expected := -1
 	sln := SolveDay10Part2(exampleRaw)
 
 	if sln != expected {
