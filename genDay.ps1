@@ -1,13 +1,10 @@
-param(
-    $day
-)
-
-$path = "./day$($day)"
-
-$header = "package day$($day)"
 
 
 foreach($day in 8..24){
+    $path = "./day$($day)"
+
+    $header = "package day$($day)"
+
     $files= @(
         "day$($day).go",
         "day$($day)_dataparser.go",
@@ -16,6 +13,6 @@ foreach($day in 8..24){
     )
     
     foreach($fn in $files){
-        echo $header > $path/$fn
+        echo $header > $path\$fn
     }    
 }
