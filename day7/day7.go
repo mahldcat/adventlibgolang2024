@@ -2,7 +2,7 @@ package day7
 
 import "fmt"
 
-func SolveDay7Part1(rawData string) int {
+func generalSolve(rawData string, includeConcat bool) int {
 	solnResult := 0
 
 	parsedList := day7DataParser(rawData)
@@ -15,18 +15,21 @@ func SolveDay7Part1(rawData string) int {
 			continue
 		}
 
-		// 2 1 1
-		if HasSolution(equationEntry[0], equationEntry[1]+equationEntry[2], equationEntry[3:]) ||
-			HasSolution(equationEntry[0], equationEntry[1]*equationEntry[2], equationEntry[3:]) {
+		if HasSolution(equationEntry[0], equationEntry[1]+equationEntry[2], equationEntry[3:], includeConcat) ||
+			HasSolution(equationEntry[0], equationEntry[1]*equationEntry[2], equationEntry[3:], includeConcat) ||
+			(includeConcat && HasSolution(equationEntry[0], concat(equationEntry[1], equationEntry[2]), equationEntry[3:], includeConcat)) {
 			solnResult += equationEntry[0]
 		}
-	}
 
+	}
 	return solnResult
+
+}
+
+func SolveDay7Part1(rawData string) int {
+	return generalSolve(rawData, false)
 }
 
 func SolveDay7Part2(rawData string) int {
-	solnResult := -1
-
-	return solnResult
+	return generalSolve(rawData, true)
 }

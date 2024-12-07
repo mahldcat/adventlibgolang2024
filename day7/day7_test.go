@@ -43,7 +43,7 @@ func TestDay7Part1(t *testing.T) {
 }
 
 func TestDay7Part2(t *testing.T) {
-	expected := -1
+	expected := 11387
 	sln := SolveDay7Part2(exampleRaw)
 
 	if sln != expected {
