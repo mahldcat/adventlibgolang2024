@@ -40,7 +40,6 @@ func generalSolve(rawData string, includeConcat bool) int {
 
 	}
 	return combinedSolution
-
 }
 
 func SolveDay7Part1(rawData string) int {
