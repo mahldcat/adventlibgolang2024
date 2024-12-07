@@ -3,26 +3,43 @@ package day7
 import "fmt"
 
 func generalSolve(rawData string, includeConcat bool) int {
-	solnResult := 0
+	combinedSolution := 0
 
 	parsedList := day7DataParser(rawData)
 
-	for _, equationEntry := range parsedList {
+	for _, entry := range parsedList {
 		//this isn't needed for the AOC data, but nice to have
 		//this is also something I'd be asking questionss on during an interview
-		if len(equationEntry) < 3 {
-			fmt.Printf("Unexpected equation list size: %d", len(equationEntry))
+		if len(entry) < 3 {
+			fmt.Printf("Unexpected equation list size: %d", len(entry))
 			continue
 		}
 
-		if HasSolution(equationEntry[0], equationEntry[1]+equationEntry[2], equationEntry[3:], includeConcat) ||
-			HasSolution(equationEntry[0], equationEntry[1]*equationEntry[2], equationEntry[3:], includeConcat) ||
-			(includeConcat && HasSolution(equationEntry[0], concat(equationEntry[1], equationEntry[2]), equationEntry[3:], includeConcat)) {
-			solnResult += equationEntry[0]
+		/*
+		   original code was this if block that was....nasty?
+
+		       if HasSolution(equationEntry[0], equationEntry[1]+equationEntry[2], equationEntry[3:], includeConcat) ||
+		           HasSolution(equationEntry[0], equationEntry[1]*equationEntry[2], equationEntry[3:], includeConcat) ||
+		           (includeConcat && HasSolution(equationEntry[0], concat(equationEntry[1], equationEntry[2]), equationEntry[3:], includeConcat)) {
+		           solnResult += equationEntry[0]
+		       }
+		*/
+		//the following is slightly more readable....
+		solTtl := entry[0]
+		e1 := entry[1]
+		e2 := entry[2]
+		remainder := entry[3:]
+
+		if HasSolution(solTtl, e1+e2, remainder, includeConcat) {
+			combinedSolution += solTtl
+		} else if HasSolution(solTtl, e1*e2, remainder, includeConcat) {
+			combinedSolution += solTtl
+		} else if includeConcat && HasSolution(solTtl, concat(e1, e2), remainder, includeConcat) {
+			combinedSolution += solTtl
 		}
 
 	}
-	return solnResult
+	return combinedSolution
 
 }
 
