@@ -42,7 +42,6 @@ func SolveDay8Part1(rawData string) int {
 }
 
 func SolveDay8Part2(rawData string) int {
-
 	pointMap, gridSize := day8DataParser(rawData)
 	collectedPoints := make([]Point, 0)
 

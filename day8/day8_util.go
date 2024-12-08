@@ -58,12 +58,3 @@ func (p Point) Equals(p1 Point) bool {
 func (p Point) InBounds(gSz Point) bool {
 	return p.X >= 0 && p.X < gSz.X && p.Y >= 0 && p.Y < gSz.Y
 }
-
-/*
-   P1
-   P2
-   P3
-   P4
-
-
-*/
