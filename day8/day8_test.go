@@ -49,7 +49,7 @@ func TestDay8Part1(t *testing.T) {
 }
 
 func TestDay8Part2(t *testing.T) {
-	expected := -1
+	expected := 34
 	sln := SolveDay8Part2(exampleRaw)
 
 	if sln != expected {
@@ -57,7 +57,7 @@ func TestDay8Part2(t *testing.T) {
 	}
 }
 
-func TestDistSquare(t *testing.T) {
+func TestDist(t *testing.T) {
 	p := Point{X: 2, Y: 2}
 	p2 := Point{X: 6, Y: 1}
 
@@ -79,16 +79,21 @@ func TestFromPoint(t *testing.T) {
 	p := Point{X: 2, Y: 2}
 	p2 := Point{X: 6, Y: 1}
 
-	p3, p4 := p.GetExtensionPoints(p2)
+	gSz := Point{X: 9999, Y: 9999}
 
-	expectedP3 := Point{X: -2, Y: 3}
+	/*
+		this one will be calculated but thrown away because its OOB  X <0)
+		expectedP3 := Point{X: -2, Y: 3}
+	*/
 	expectedP4 := Point{X: 10, Y: 0}
 
-	if !p3.Equals(expectedP3) {
-		t.Fatalf("invalid point, expected (%d,%d), actual (%d,%d)", p3.X, p3.Y, expectedP3.X, expectedP3.Y)
+	pts := p.GetExtensionPoints(p2, gSz)
+
+	if len(pts) != 1 {
+		t.Fatalf("GetExtensionPoints slice count failed, expected 2, actual %d", len(pts))
 	}
 
-	if !p4.Equals(expectedP4) {
-		t.Fatalf("invalid point, expected (%d,%d), actual (%d,%d)", p4.X, p4.Y, expectedP4.X, expectedP4.Y)
+	if !pts[0].Equals(expectedP4) {
+		t.Fatalf("invalid point, expected (%d,%d), actual (%d,%d)", pts[1].X, pts[1].Y, expectedP4.X, expectedP4.Y)
 	}
 }

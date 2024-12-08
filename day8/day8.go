@@ -9,29 +9,30 @@ func ContainsPoint(hayStack []Point, needle Point) bool {
 	return false
 }
 
-func AppendBoundaryUnique(points []Point, p Point, gSz Point) []Point {
-	if p.InBounds(gSz) && !ContainsPoint(points, p) {
-		points = append(points, p)
-	}
+func AppendUnique(points []Point, pts []Point) []Point {
 
+	for _, p := range pts {
+		if !ContainsPoint(points, p) {
+			points = append(points, p)
+		}
+	}
 	return points
 }
 
 func SolveDay8Part1(rawData string) int {
 
 	pointMap, gridSize := day8DataParser(rawData)
-
 	collectedPoints := make([]Point, 0)
 
 	for _, points := range pointMap {
-
+		if len(points) == 1 {
+			continue
+		}
 		for i, p1 := range points {
 			for _, p2 := range points[i+1:] {
 
-				p3, p4 := p1.GetExtensionPoints(p2)
-
-				collectedPoints = AppendBoundaryUnique(collectedPoints, p3, gridSize)
-				collectedPoints = AppendBoundaryUnique(collectedPoints, p4, gridSize)
+				pts := p1.GetExtensionPoints(p2, gridSize)
+				collectedPoints = AppendUnique(collectedPoints, pts)
 			}
 		}
 
@@ -41,7 +42,23 @@ func SolveDay8Part1(rawData string) int {
 }
 
 func SolveDay8Part2(rawData string) int {
-	solnResult := -1
+	pointMap, gridSize := day8DataParser(rawData)
+	collectedPoints := make([]Point, 0)
 
-	return solnResult
+	for _, points := range pointMap {
+		if len(points) == 1 {
+			continue
+		}
+		collectedPoints = AppendUnique(collectedPoints, points) //each point should be counted now
+
+		for i, p1 := range points {
+			for _, p2 := range points[i+1:] {
+
+				pts := p1.GetExtensionPointsInLine(p2, gridSize)
+				collectedPoints = AppendUnique(collectedPoints, pts)
+			}
+		}
+	}
+
+	return len(collectedPoints)
 }
