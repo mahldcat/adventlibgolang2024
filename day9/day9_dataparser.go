@@ -1,9 +1,16 @@
 package day9
 
-import (
-	"errors"
-)
+func day9DataParser(rawData string) ([]int, int) {
+	spaceNeeded := 0
+	memVals := make([]int, 0)
+	var converted int
 
-func day5DataParser(rawData string) (error) {
-    return errors.New("not implemented")
+	for _, cmpRune := range rawData {
+		converted = int(cmpRune - '0')
+
+		spaceNeeded += converted
+		memVals = append(memVals, converted)
+	}
+
+	return memVals, spaceNeeded
 }
