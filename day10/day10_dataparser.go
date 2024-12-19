@@ -10,7 +10,6 @@ func LineToMapCoordinates(line string, y int) []MapCoordinate {
 	mapCoord := make([]MapCoordinate, 0, len(line))
 
 	for x, ht := range line {
-
 		mapCoord = append(mapCoord, MapCoordinate{
 			Point: Point{
 				X: x,
