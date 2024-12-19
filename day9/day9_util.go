@@ -1,96 +1,226 @@
 package day9
 
-func GetUncompacted(compactedFiles []int, decompressedSize int) []int {
-	uncompacted := make([]int, decompressedSize)
+import (
+	"fmt"
+	"sort"
+	"strings"
+)
 
-	isFile := true //slackSpace is false
-	fileIdx := 0
-	uIdxOffSet := 0
-	for _, cf := range compactedFiles {
-		for i := 0; i < cf; i++ {
-			if isFile {
-				uncompacted[uIdxOffSet+i] = fileIdx
-			} else {
-				uncompacted[uIdxOffSet+i] = -1
-			}
-		}
+type FileType int
 
-		if isFile {
-			fileIdx++
-		}
-		isFile = !isFile
-		uIdxOffSet += cf
-	}
+const (
+	EmptySpace FileType = iota
+	File
+)
 
-	return uncompacted
+type DiskEntry struct {
+	space           int      //number of units
+	index           int      //file id
+	locationPointer int      //starts at
+	entryType       FileType //(0)space (1)file  [technically we don't need this as we are indexing space with neg indices]
 }
 
-func GetCheckSum(defragged []int) int {
+func (file *DiskEntry) ToString() string {
+	return fmt.Sprintf("%+v", file)
+}
 
+func (file *DiskEntry) FileCheckSum() int {
 	checkSum := 0
-	for i, idx := range defragged {
-		//fmt.Printf("checkSum on file[%d]:=%d\n", i, idx)
-		if idx == -1 {
-			return checkSum
+
+	for i := 0; i < file.space; i++ {
+		checkSum += file.index * (file.locationPointer + i)
+
+	}
+	return checkSum
+}
+
+type DiskDrive []DiskEntry
+
+func (drive *DiskDrive) CalculateCheckSum() int {
+	checkSum := 0
+	/*
+		12345
+		0..111....22222
+		        10  11 12 13 14
+		0
+	*/
+	for _, d := range *drive {
+		if d.entryType == File {
+			checkSum += d.FileCheckSum()
 		}
-		checkSum += (i * idx)
 	}
 
 	return checkSum
 }
 
-func Swap(intSlice []int, idx1 int, idx2 int) {
-	intSlice[idx1], intSlice[idx2] = intSlice[idx2], intSlice[idx1]
+func (drive *DiskDrive) DiskEntriesToString() string {
+
+	var builder strings.Builder
+
+	for _, d := range *drive {
+		for i := 0; i < d.space; i++ {
+			if d.entryType == File {
+				builder.WriteString(fmt.Sprintf("%d", d.index))
+			} else {
+				builder.WriteString(".")
+			}
+		}
+	}
+	return builder.String()
 }
 
-//gets the index and value of the last file entry in uncompacted
-// starting from startFrom
-func GetLastFileIndex(uncompacted []int, startFrom int) int {
+func MoveFileIndex(emptySpace DiskEntry, candidate DiskEntry) (DiskDrive, bool) {
+	newFiles := make([]DiskEntry, 0)
+	migrated := false
 
-	for i := startFrom; i >= 0; i-- {
-		if uncompacted[i] > 0 {
-			return i
+	if emptySpace.space >= candidate.space { //can be moved
+		candidate.locationPointer = emptySpace.locationPointer
+		newFiles = append(newFiles, candidate)
+
+		newEmpty := DiskEntry{
+			space:           emptySpace.space - candidate.space, //it's ok to have an empty space
+			locationPointer: candidate.locationPointer + candidate.space,
+			index:           emptySpace.index,
+			entryType:       EmptySpace,
+		}
+		newFiles = append(newFiles, newEmpty)
+		migrated = true
+	}
+	return newFiles, migrated
+}
+
+func DedupeAndSort(disk DiskDrive) DiskDrive {
+
+	seenByIndex := make(map[int]bool)
+	deduped := make(DiskDrive, 0, len(disk))
+
+	for _, d := range disk {
+
+		if !seenByIndex[d.index] {
+			seenByIndex[d.index] = true
+			if d.entryType == EmptySpace && d.space == 0 {
+				continue
+			}
+			deduped = append(deduped, d)
 		}
 	}
 
-	//should never get here?
-	return -1
+	sort.Slice(deduped, func(i, j int) bool {
+		return deduped[i].locationPointer < deduped[j].locationPointer
+	})
+
+	return deduped
 }
 
-func GetNextSlackIndex(uncompacted []int, startFrom int) int {
-	for i := startFrom; i < len(uncompacted); i++ {
-		if uncompacted[i] == -1 {
-			return i
+func DefragIndexByFile(currentDisk DiskDrive, reverseFile Stack[DiskEntry]) int {
+	fmt.Println("Starting")
+	//fmt.Printf("%s\n", currentDisk.DiskEntriesToString())
+
+	candidateDisk := make(DiskDrive, 0)
+	candidateDiskChanged := false
+	for {
+		file, _ := reverseFile.Pop() // Pop the top of the stack
+		//fmt.Printf("Working on file[%d] : %s\n", file.index, file.ToString())
+		if file.index == 0 {
+			break // Stop when index is 0
+		}
+
+		candidateDisk = candidateDisk[:0]
+		candidateDiskChanged = false
+
+		for _, possibleEmptySpace := range currentDisk {
+			if possibleEmptySpace.entryType == File || //candidate is a file...skip it
+				possibleEmptySpace.space < file.space || //candidate space not large enough to hold the file
+				possibleEmptySpace.locationPointer > file.locationPointer { //we have gone past the file location on disk...no need to procceed
+				continue
+			}
+
+			//fmt.Println("Entering the MoveFileToIndex logic")
+			newFiles, moved := MoveFileIndex(possibleEmptySpace, file)
+
+			//fmt.Println("split files")
+
+			if moved {
+				/*
+					fmt.Printf("Moved File: %s", newFiles.DiskEntriesToString())
+					for _, nf := range newFiles {
+						fmt.Printf("splitFile: %s\n", nf.ToString())
+					}
+				*/
+				candidateDisk = append(candidateDisk, newFiles...)
+				candidateDisk = append(candidateDisk, currentDisk...)
+				candidateDiskChanged = true
+				break
+			}
+		}
+		if candidateDiskChanged {
+			//fmt.Println("Deduping/sorting disk")
+			//fmt.Printf("   Base: %s\n", candidateDisk.DiskEntriesToString())
+			currentDisk = DedupeAndSort(candidateDisk)
+			//fmt.Printf("   Ddup: %s\n", currentDisk.DiskEntriesToString())
 		}
 	}
-	return -1
+
+	//fmt.Printf("Final  Result: %s\n", currentDisk.DiskEntriesToString())
+	return currentDisk.CalculateCheckSum()
 }
 
-func Defragment(uncompacted []int) {
+func DefragIndex(rawDisk []int, reverseFiles Stack[int], sz int) int {
+	checkSum := 0
+	val := 0
 
-	forwardSlackIdx := GetNextSlackIndex(uncompacted, 0)
-	reverseFileIdx := GetLastFileIndex(uncompacted, len(uncompacted)-1)
-
-	//fmt.Printf("Forward:%d Reverse:%d\n", forwardSlackIdx, reverseFileIdx)
-
-	for forwardSlackIdx < reverseFileIdx && forwardSlackIdx != -1 && reverseFileIdx != -1 {
-		Swap(uncompacted, forwardSlackIdx, reverseFileIdx)
-		forwardSlackIdx = GetNextSlackIndex(uncompacted, forwardSlackIdx+1)
-		reverseFileIdx = GetLastFileIndex(uncompacted, reverseFileIdx-1)
-		//fmt.Printf("Forward:%d Reverse:%d\n", forwardSlackIdx, reverseFileIdx)
+	for i := 0; i < sz; i++ {
+		if rawDisk[i] == -1 {
+			val, _ = reverseFiles.Pop()
+			checkSum += (val * i)
+		} else {
+			checkSum += (rawDisk[i] * i)
+		}
 	}
+
+	return checkSum
 }
 
-/*
-"23 33 13 31 21 41 41 31 40 2"
+/**************************************************************************/
+/*                            STACK                                       */
+/**************************************************************************/
 
-00...111...2...333.44.5555.6666.777.888899
-00...111...2...333.44.5555.6666.777.888899
-f                                        b
+// Stack represents a stack data structure
+type Stack[T any] struct {
+	data []T
+}
 
-compresses to:
-0099811188827773336446555566..............
-slack Indexes
-{2, 3, 4, 8, 9, 10, 12, 13, 14, 18, 21, 26, 31, 35}
+// Push adds an element to the top of the stack
+func (s *Stack[T]) Push(value T) {
+	s.data = append(s.data, value)
+}
 
-*/
+// Pop removes and returns the top element of the stack
+func (s *Stack[T]) Pop() (T, bool) {
+	if len(s.data) == 0 {
+		var zeroVal T
+		return zeroVal, false // Return zero value and false if stack is empty
+	}
+	val := s.data[len(s.data)-1]    // Get the top element
+	s.data = s.data[:len(s.data)-1] // Remove the top element
+	return val, true
+}
+
+// Peek returns the top element without removing it
+func (s *Stack[T]) Peek() (T, bool) {
+	if len(s.data) == 0 {
+		var zeroVal T
+		return zeroVal, false // Return zero value and false if stack is empty
+	}
+	return s.data[len(s.data)-1], true
+}
+
+// IsEmpty checks if the stack is empty
+func (s *Stack[T]) IsEmpty() bool {
+	return len(s.data) == 0
+}
+
+// Size returns the number of elements in the stack
+func (s *Stack[T]) Size() int {
+	return len(s.data)
+}

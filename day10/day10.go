@@ -1,15 +1,15 @@
 package day10
 
-
 func SolveDay10Part1(rawData string) int {
-    solnResult:=-1
+	topoMap := day10DataParser(rawData)
 
-    return solnResult
+	peak1, _ := topoMap.GetPathCounts()
+	return peak1
 }
 
 func SolveDay10Part2(rawData string) int {
-    solnResult:=-1
+	topoMap := day10DataParser(rawData)
 
-    return solnResult
+	_, peak2 := topoMap.GetPathCounts()
+	return peak2
 }
-

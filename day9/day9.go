@@ -1,19 +1,13 @@
 package day9
 
 func SolveDay9Part1(rawData string) int {
-	compressedFiles, szExpanded := day9DataParser(rawData)
+	reverseFile, sizeCompacted, expandedDisk := day9DataParser(rawData)
 
-	uncompacted := GetUncompacted(compressedFiles, szExpanded)
-
-	Defragment(uncompacted)
-
-	//fmt.Printf("Defrag: %v\n", uncompacted)
-
-	return GetCheckSum(uncompacted)
+	return DefragIndex(expandedDisk, *reverseFile, sizeCompacted)
 }
 
 func SolveDay9Part2(rawData string) int {
-	solnResult := -1
+	diskEntries, reverserawData := day9DataParserPart2(rawData)
 
-	return solnResult
+	return DefragIndexByFile(diskEntries, *reverserawData)
 }
